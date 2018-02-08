@@ -210,8 +210,8 @@ begin
 //  ilclient_state_transition (@list, OMX_StateIdle);        // hanging
 //  ilclient_state_transition (@list, OMX_StateLoaded);      // hanging
   Log ('state transitions');
-  ilclient_cleanup_components (@list);
-  Log ('cleaned up components');
+//ilclient_cleanup_components (@list); // removed so that loop will work
+//Log ('cleaned up components');       // removed so that loop will work
   OMX_Deinit;
   ilclient_destroy (client);
   Log ('done');
@@ -239,7 +239,27 @@ begin
   while not DirectoryExists ('C:\') do sleep (500);
 end;
 
+procedure RestoreDefaultBootConfig;
 begin
+ while not DirectoryExists ('C:\') Do
+  sleep (500);
+ if FileExists('default-config.txt') then
+  CopyFile('default-config.txt','config.txt',False);
+end;
+
+var
+ LoopCounter:Integer=0;
+ FPCHeapStatus:TFPCHeapStatus;
+
+procedure LogMetrics;
+begin
+ Inc(LoopCounter);
+ FPCHeapStatus:=GetFPCHeapStatus;
+ Log(Format('%d loops - GetFPCHeapStatus.CurrHeapFree %d',[LoopCounter,FPCHeapStatus.CurrHeapFree]));
+end;
+
+begin
+  RestoreDefaultBootConfig;
   Console1 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_LEFT, true);
   Console2 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPRIGHT, false);
   Console3 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_BOTTOMRIGHT, false);
@@ -257,8 +277,13 @@ begin
   {$endif}
 
   BCMHostInit;
-  video_decode_test ('test.h264');
-  Log ('Playback finished.');
+  while True do
+   begin
+    video_decode_test ('test.h264');
+    Log ('Playback finished.');
+    LogMetrics;
+    Sleep(2*1000);
+   end;
 
   ThreadHalt (0);
 end.

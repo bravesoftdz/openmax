@@ -1,0 +1,2 @@
+kernel=ultibo-openmax-kernel7.img
+cmdline=ultibo-openmax-cmdline.txt

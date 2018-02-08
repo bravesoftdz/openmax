@@ -149,7 +149,16 @@ begin
   disableSomePorts (handle, OMX_IndexParamOtherInit);
 end;
 
+procedure RestoreDefaultBootConfig;
 begin
+ while not DirectoryExists ('C:\') Do
+  sleep (500);
+ if FileExists('default-config.txt') then
+  CopyFile('default-config.txt','config.txt',False);
+end;
+
+begin
+  RestoreDefaultBootConfig;
   Console1 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_LEFT, true);
   Console2 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPRIGHT, false);
   Console3 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_BOTTOMRIGHT, false);

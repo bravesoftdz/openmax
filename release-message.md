@@ -1,0 +1,1 @@
+VideoTest kernel - with loop
